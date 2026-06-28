@@ -17,11 +17,25 @@ and live-polls their inbox. Built with Python and [Rich](https://github.com/Text
 ```bash
 pip install uv
 uv tool install tmail
-tmail
+tmail           # interactive TUI
 ```
 
-Select **1** to generate a new email and watch mail arrive in real time.
-Press **Ctrl+C** to open the email action menu.
+## CLI flags
+
+| Command | Description |
+|---|---|
+| `tmail` | Open the interactive TUI menu |
+| `tmail -g` | Generate a new email, print it, copy to clipboard |
+| `tmail -g -w` | Generate and immediately watch the new inbox |
+| `tmail -g -i` | Generate and fetch inbox once (one-shot) |
+| `tmail -l` | List saved emails with unread counts |
+| `tmail -i <email>` | Fetch inbox once (plain text, good for scripts) |
+| `tmail -w <email>` | Live-poll inbox (plain text, Ctrl+C to stop) |
+| `tmail -d <email>` | Delete an email from history |
+| `tmail -n <seconds>` | Set poll interval |
+| `tmail -c` | Clear all stored data |
+| `tmail -V` | Show version |
+| `tmail -h` | Show help |
 
 ## Documentation
 

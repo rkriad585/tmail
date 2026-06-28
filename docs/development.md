@@ -93,22 +93,36 @@ Key components:
 
 ### cli.py — orchestration
 
-Wires api/storage/ui together. Contains the main loop, inbox poller, and all
-submenus. This is the entry point (`tmail.cli:main`).
+Wires api/storage/ui together. Contains the main loop, inbox poller, all
+submenus, and CLI flag handling via `argparse`. This is the entry point
+(`tmail.cli:main`).
 
 ```python
 from tmail.cli import main
 
-main()  # starts the menu loop
+main()  # parses sys.argv, dispatches flags or starts TUI
 ```
 
 Flow:
 
 ```
-main() → main_menu() → email actions → display_inbox()
-                   ↘ settings_menu()
-                   ↘ delete_email_saved()
+main() → argparse → --generate / --list / --inbox / --watch / ...
+                 ↘ main_menu() → email actions → display_inbox()
+                              ↘ settings_menu()
+                              ↘ delete_email_saved()
 ```
+
+CLI flags are defined in `main()` using `argparse.ArgumentParser`. Each
+flag calls the same core functions from api/storage/ui but uses plain
+`print()` instead of Rich widgets so output works in pipes and scripts.
+
+Non-interactive helpers:
+
+| Function | Used by |
+|---|---|
+| `_print_messages_plain(messages)` | `--inbox`, `--watch` |
+| `_copy_silent(text)` | `--generate` |
+| (inline handlers) | `--list`, `--delete`, `--interval`, `--clear`, `--version` |
 
 ## Adding a new menu option
 

@@ -19,11 +19,60 @@ uv sync
 ## Quick start
 
 ```bash
-tmail
+tmail           # interactive TUI
+tmail -g        # generate email, print, copy to clipboard
+tmail -i foo@example.com   # one-shot inbox check
 ```
 
-Press **1** to generate a new random email, then watch incoming mail arrive
-in real time. Press **Ctrl+C** to return to the email action menu.
+Press **1** from the TUI to generate a new random email and watch mail
+arrive in real time. Press **Ctrl+C** to return to the email action menu.
+
+## CLI flags
+
+tmail supports non-interative flags for scripting and quick operations:
+
+| Command | Description |
+|---|---|
+| `tmail -g` | Generate a new email, print it, copy to clipboard, exit |
+| `tmail -g -w` | Generate and immediately watch the inbox (plain text) |
+| `tmail -g -i` | Generate and fetch inbox once (one-shot) |
+| `tmail -l` | List all saved emails with unread counts, exit |
+| `tmail -i EMAIL` | Fetch inbox once, print messages as plain text, exit |
+| `tmail -w EMAIL` | Live-poll inbox in plain-text mode, Ctrl+C to stop |
+| `tmail -d EMAIL` | Delete a specific email from history, exit |
+| `tmail -n SECONDS` | Set the poll interval in seconds, exit |
+| `tmail -c` | Clear all stored data, exit |
+| `tmail -V` | Show version and exit |
+| `tmail -h` | Show help message and exit |
+
+The `-i` and `-w` flags accept an optional EMAIL argument. When used
+without an argument together with `-g`, they use the newly generated
+address automatically.
+
+### --inbox example
+
+```bash
+tmail -i abc123@tempmail.com
+```
+
+Output:
+```
+--- Message 1 ---
+From:    sender@example.com
+To:      abc123@tempmail.com
+Subject: Welcome!
+Body:    Thank you for signing up...
+```
+
+### --watch example
+
+```bash
+tmail -w abc123@tempmail.com
+Watching abc123@tempmail.com (poll every 5s, Ctrl+C to stop)...
+```
+
+New messages are printed as they arrive. Useful for tail-like monitoring
+without the Rich TUI.
 
 ## Main menu
 

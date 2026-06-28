@@ -42,6 +42,52 @@ from .ui import (
 )
 
 
+# ── helpers for non-interactive (CLI flag) use ──────────────────────
+
+def _print_messages_plain(messages):
+    """Print messages as plain text (for --inbox / --watch)."""
+    if not messages:
+        print("No messages.")
+        return
+    for i, msg in enumerate(messages, 1):
+        print(f"--- Message {i} ---")
+        print(f"From:    {msg['from']}")
+        print(f"To:      {msg['to']}")
+        print(f"Subject: {msg['subject']}")
+        print(f"Body:    {msg['body_text']}")
+        if msg.get("attachments"):
+            names = ", ".join(a["name"] for a in msg["attachments"])
+            print(f"Attachments: {names}")
+        print()
+
+
+def _copy_silent(text):
+    """Copy to clipboard without UI messages (for --generate)."""
+    import subprocess
+    import shutil
+    try:
+        import pyperclip
+        pyperclip.copy(text)
+        return True
+    except Exception:
+        pass
+    for name, cmd in [
+        ("xclip", ["xclip", "-selection", "clipboard"]),
+        ("xsel", ["xsel", "--clipboard", "--input"]),
+        ("wl-copy", ["wl-copy"]),
+    ]:
+        if shutil.which(name):
+            try:
+                proc = subprocess.run(cmd, input=text, text=True, capture_output=True, timeout=5)
+                if proc.returncode == 0:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+# ── Interactive TUI functions ───────────────────────────────────────
+
 def display_inbox(email, poll_interval):
     """Displays the inbox for a given email address with live polling.
 
@@ -139,7 +185,7 @@ def download_attachments(email):
 
 
 def copy_to_clipboard(text):
-    """Copy text to clipboard. Tries pyperclip first, then direct backends."""
+    """Copy text to clipboard (interactive — shows UI messages)."""
     import subprocess
     import shutil
 
@@ -351,9 +397,146 @@ def main_menu():
             sys.exit()
 
 
-def main():
+# ── CLI flags + entry point ─────────────────────────────────────────
+
+def _watch_inbox(email):
+    """Live-poll inbox in plain text mode (used by --watch)."""
+    seen_ids = load_seen_mail_ids()
+    config = load_config()
+    interval = config["poll_interval"]
+    print(f"Watching {email} (poll every {interval}s, Ctrl+C to stop)...")
     try:
+        while True:
+            try:
+                messages = fetch_messages(email)
+                new = []
+                for msg in messages:
+                    mid = str(msg["id"])
+                    if mid not in seen_ids:
+                        seen_ids.add(mid)
+                        new.append(msg)
+                if new:
+                    _print_messages_plain(new)
+                    save_seen_mail_ids(seen_ids)
+                time.sleep(interval)
+            except requests.RequestException as e:
+                print(f"Error: {e}", file=sys.stderr)
+                time.sleep(interval)
+    except KeyboardInterrupt:
+        pass
+
+
+def main():
+    import argparse
+
+    try:
+        from importlib.metadata import version as _v
+        VERSION = _v("tmail")
+    except Exception:
+        VERSION = "0.1.0"
+
+    parser = argparse.ArgumentParser(
+        description="Disposable email addresses in your terminal.",
+    )
+    parser.add_argument("-g", "--generate", action="store_true",
+                        help="generate a new random email and print it")
+    parser.add_argument("-l", "--list", action="store_true",
+                        help="list saved emails")
+    parser.add_argument("-i", "--inbox", metavar="EMAIL", nargs="?",
+                        const="__generate__",
+                        help="fetch inbox for EMAIL (one-shot, plain text)")
+    parser.add_argument("-w", "--watch", metavar="EMAIL", nargs="?",
+                        const="__generate__",
+                        help="live-poll inbox for EMAIL (plain text, Ctrl+C to stop)")
+    parser.add_argument("-d", "--delete", metavar="EMAIL",
+                        help="delete EMAIL from history")
+    parser.add_argument("-n", "--interval", metavar="SECONDS", type=int,
+                        help="set poll interval in seconds")
+    parser.add_argument("-c", "--clear", action="store_true",
+                        help="clear all stored data")
+    parser.add_argument("-V", "--version", action="store_true",
+                        help="show version and exit")
+
+    args = parser.parse_args()
+
+    try:
+        if args.version:
+            print(f"tmail v{VERSION}")
+            return
+
+        # --generate can combine with --inbox or --watch
+        generated = None
+        if args.generate:
+            generated = get_random_email()
+            save_email(generated)
+            print(generated)
+            _copy_silent(generated)
+
+        if generated and not args.inbox and not args.watch:
+            return
+
+        if args.list:
+            emails = get_old_emails()
+            unread = get_unread_counts()
+            if not emails:
+                print("No saved emails.")
+                return
+            for i, email in enumerate(emails, 1):
+                count = unread.get(email, 0)
+                badge = f"  ({count} unread)" if count else ""
+                print(f"{i}. {email}{badge}")
+            return
+
+        if args.inbox:
+            target = args.inbox
+            if target == "__generate__" or generated is not None:
+                if generated is None:
+                    generated = get_random_email()
+                    save_email(generated)
+                    print(generated)
+                    _copy_silent(generated)
+                target = generated
+            _print_messages_plain(fetch_messages(target))
+            return
+
+        if args.watch:
+            target = args.watch
+            if target == "__generate__" or generated is not None:
+                if generated is None:
+                    generated = get_random_email()
+                    save_email(generated)
+                    print(generated)
+                    _copy_silent(generated)
+                target = generated
+            _watch_inbox(target)
+            return
+
+        if args.delete:
+            if delete_email(args.delete):
+                remove_unread_entry(args.delete)
+                print(f"Deleted: {args.delete}")
+            else:
+                print(f"Email not found: {args.delete}", file=sys.stderr)
+            return
+
+        if args.interval is not None:
+            config = load_config()
+            config["poll_interval"] = args.interval
+            save_config(config)
+            print(f"Poll interval set to {args.interval}s")
+            return
+
+        if args.clear:
+            remove_all_data()
+            print("All data cleared.")
+            return
+
+        # Default: interactive TUI
         main_menu()
+
+    except requests.RequestException as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
     except KeyboardInterrupt:
         console.print("\n[bold cyan]Goodbye![/bold cyan]")
         sys.exit(0)
