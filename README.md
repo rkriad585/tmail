@@ -25,17 +25,8 @@ uv tool install tmail
 Or install from source:
 
 ```bash
-git clone https://github.com/rkriad585/TempMail.git
-cd TempMail
-pip install uv
-uv sync
-```
-
-## Development / Local setup
-
-```bash
-git clone https://github.com/rkriad585/TempMail.git
-cd TempMail
+git clone https://github.com/rkriad585/tmail.git
+cd tmail
 pip install uv
 uv sync
 ```
