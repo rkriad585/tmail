@@ -9,56 +9,30 @@
 
 ---
 
-## Overview
-
-**tmail** is a lightweight CLI tool that generates temporary email addresses and
-live-polls their inbox. Built with Python and the [Rich](https://github.com/Textualize/rich)
-library, it gives you a disposable inbox without leaving your terminal.
-
-## Installation
-
-```bash
-pip install uv
-uv tool install tmail
-```
-
-Or install from source:
-
-```bash
-git clone https://github.com/rkriad585/tmail.git
-cd tmail
-pip install uv
-uv sync
-```
+tmail is a lightweight CLI tool that generates temporary email addresses
+and live-polls their inbox. Built with Python and [Rich](https://github.com/Textualize/rich).
 
 ## Quick start
 
 ```bash
+pip install uv
+uv tool install tmail
 tmail
 ```
 
-Select **1** to generate a new random email, then watch incoming mail arrive
-in real time. Press **Ctrl+C** to return to the menu at any point.
+Select **1** to generate a new email and watch mail arrive in real time.
+Press **Ctrl+C** to open the email action menu.
 
-## Command-line tool usage
+## Documentation
 
-```
-tmail
-```
+| Doc | What's inside |
+|---|---|
+| [User Guide](docs/guide.md) | Full feature walkthrough, menu reference, settings, clipboard, attachments |
+| [Development Guide](docs/development.md) | Architecture, module breakdown, code examples, adding features |
 
-Opens the interactive TUI menu:
+## Data
 
-1. **Generate Random Mail** — creates a new disposable address and opens its inbox
-2. **See Mails You Created** — lists every address you have generated
-3. **Log In To Old Mails** — re-opens the inbox of a previously created address
-4. **Remove All Old Mail's Data** — deletes all stored email history
-5. **Exit**
-
-## How it works
-
-tmail uses the internal [temp-mail.io API](https://temp-mail.io/) (no authentication
-required) to create addresses and fetch messages. Data is persisted locally in
-`.temp_mail_data/` as JSON files.
+All data is stored in `.tmail_data/` as JSON files — no database required.
 
 ## License
 

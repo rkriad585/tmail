@@ -1,5 +1,5 @@
 # Runtime data
-.temp_mail_data/
+.tmail_data/
 
 # Python
 __pycache__/
@@ -11,6 +11,10 @@ build/
 .venv/
 venv/
 env/
+
+# Agent / plan files
+AGENTS.md
+PLAN.md
 
 # IDE
 .vscode/

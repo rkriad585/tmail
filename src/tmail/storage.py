@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-DATA_DIR = Path(".temp_mail_data")
+DATA_DIR = Path(".tmail_data")
 OLD_MAILS_FILE = DATA_DIR / "old_mails.json"
 SEEN_MAILS_FILE = DATA_DIR / "seen_mails.json"
 CONFIG_FILE = DATA_DIR / "config.json"
