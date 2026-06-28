@@ -24,3 +24,13 @@ def fetch_messages(email):
 def get_attachment_url(att_id):
     """Returns the download URL for an attachment."""
     return ATTACHMENT_ENDPOINT.format(id=att_id)
+
+
+def download_attachment(att_id, save_path):
+    """Downloads an attachment to the given file path."""
+    url = ATTACHMENT_ENDPOINT.format(id=att_id)
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    with open(save_path, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)

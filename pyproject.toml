@@ -9,6 +9,7 @@ dependencies = [
     "requests",
     "rich",
     "pyfiglet",
+    "pyperclip",
 ]
 
 [project.scripts]
