@@ -233,9 +233,12 @@ def main_menu():
             sys.exit()
 
 
-if __name__ == "__main__":
+def main():
     try:
         main_menu()
     except KeyboardInterrupt:
         console.print("\n[bold cyan]Goodbye![/bold cyan]")
         sys.exit(0)
+
+if __name__ == "__main__":
+    main()

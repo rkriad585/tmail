@@ -1,0 +1,18 @@
+# Auto-detect text files
+* text=auto
+
+# Python source
+*.py text diff=python
+
+# Markdown
+*.md text
+
+# JSON
+*.json text
+
+# Config
+*.txt text
+*.cfg text
+*.ini text
+*.yml text
+*.yaml text
