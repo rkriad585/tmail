@@ -12,10 +12,10 @@ dependencies = [
 ]
 
 [project.scripts]
-tmail = "mail:main"
+tmail = "tmail.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["."]
+packages = ["src/tmail"]
 
 [build-system]
 requires = ["hatchling"]

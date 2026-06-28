@@ -56,7 +56,7 @@ Opens the interactive TUI menu:
 
 ## How it works
 
-tmail uses the internal [Temp Mail API](https://temp-mail.io/) (no authentication
+tmail uses the internal [temp-mail.io API](https://temp-mail.io/) (no authentication
 required) to create addresses and fetch messages. Data is persisted locally in
 `.temp_mail_data/` as JSON files.
 
