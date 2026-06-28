@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/tmail-v0.1.0-blue" alt="version">
+  <img src="https://img.shields.io/badge/tmail-v0.2.0-blue" alt="version">
   <img src="https://img.shields.io/badge/python-%3E%3D3.10-green" alt="python">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="license">
 </p>
@@ -15,8 +15,9 @@ and live-polls their inbox. Built with Python and [Rich](https://github.com/Text
 ## Quick start
 
 ```bash
-pip install uv
-uv tool install tmail
+pip install tmail-cli
+# or with uv:
+pip install uv && uv tool install tmail-cli
 tmail           # interactive TUI
 ```
 

@@ -431,9 +431,9 @@ def main():
 
     try:
         from importlib.metadata import version as _v
-        VERSION = _v("tmail")
+        VERSION = _v("tmail-cli")
     except Exception:
-        VERSION = "0.1.0"
+        VERSION = "0.2.0"
 
     parser = argparse.ArgumentParser(
         description="Disposable email addresses in your terminal.",
@@ -489,6 +489,9 @@ def main():
 
         if args.inbox:
             target = args.inbox
+            if target == "__generate__" and generated is None:
+                print("error: --inbox requires an EMAIL argument or --generate", file=sys.stderr)
+                sys.exit(1)
             if target == "__generate__" or generated is not None:
                 if generated is None:
                     generated = get_random_email()
@@ -501,6 +504,9 @@ def main():
 
         if args.watch:
             target = args.watch
+            if target == "__generate__" and generated is None:
+                print("error: --watch requires an EMAIL argument or --generate", file=sys.stderr)
+                sys.exit(1)
             if target == "__generate__" or generated is not None:
                 if generated is None:
                     generated = get_random_email()

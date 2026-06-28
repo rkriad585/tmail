@@ -1,6 +1,6 @@
 [project]
-name = "tmail"
-version = "0.1.0"
+name = "tmail-cli"
+version = "0.2.0"
 description = "CLI tool for generating temporary email addresses and viewing inboxes"
 readme = "README.md"
 license = { text = "MIT" }

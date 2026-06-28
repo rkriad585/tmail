@@ -3,8 +3,14 @@
 ## Installation
 
 ```bash
+pip install tmail-cli
+```
+
+Or with `uv`:
+
+```bash
 pip install uv
-uv tool install tmail
+uv tool install tmail-cli
 ```
 
 Or from source:

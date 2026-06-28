@@ -9,7 +9,6 @@ git clone https://github.com/rkriad585/tmail.git
 cd tmail
 pip install uv
 uv sync
-tmail
 ```
 
 ## Development
